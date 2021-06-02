@@ -1,0 +1,29 @@
+.header {
+    padding: 1% 5%;
+    color: white;
+    display: flex;
+    align-items: center;
+    background: no-repeat;
+    background-size: cover;
+    background-image: url('./assets/back_map.png');
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+
+    &-container {
+
+        align-items: baseline;
+
+        &-title {
+            font-size: 42px;
+        }
+
+        &-link {
+            color: white;
+            font-size: 20px;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}

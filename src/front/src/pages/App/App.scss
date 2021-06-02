@@ -1,0 +1,21 @@
+.loading-screen {
+  background: black;
+  opacity: 0.4;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  .loading-circle {
+    position: fixed;
+    left: 50%;
+    top: 45%;
+  }
+}
+
+.error {
+  position: fixed;
+  width: 100%;
+  z-index: 999;
+}

@@ -1,0 +1,14 @@
+.trade-container {
+    height: -webkit-fill-available;
+    padding: 0 5% 5%;
+
+    .paper {
+        padding: 20px;
+        margin-bottom: 20px;
+
+        .right-side {
+            justify-content: flex-end;
+            display: flex;
+        }
+    }
+}

@@ -1,0 +1,32 @@
+.standart-btn {
+    text-decoration: none !important;
+    color: white !important;
+}
+
+body {
+    margin: 0;
+    background: #72D0FF;
+}
+
+html, body, #root {
+    height: fit-content;
+}
+
+.modal-template {
+    outline: none;
+    padding: 20px;
+    background: white;
+    width: 400px;
+    position: absolute;
+}
+
+.modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.MuiButton-root {
+    background: #4cb4ff !important;
+    color: white !important;
+}
