@@ -1,5 +1,17 @@
 import { getRepository, IsNull, Not } from "typeorm";
-import { Resource, ResourceOwner, Country, Trade, TradeStatus, Options, Build, IncreaseResources, ResourceCountRelations, Link } from "../db/entities";
+import {
+  Resource,
+  ResourceOwner,
+  Country,
+  Trade,
+  TradeStatus,
+  Options,
+  Build,
+  IncreaseResources,
+  ResourceCountRelations,
+  Link,
+  LifeLevel
+} from "../db/entities";
 const xl = require('excel4node');
 import moment from "moment";
 import BuildOwner from "src/db/entities/BuildOwner";
@@ -39,7 +51,13 @@ export default class ResourceController {
   async getAllBuilds() {
     const buildRepository = getRepository(Build);
 
-    return await buildRepository.find({relations: ['changes', 'buildConditions', 'changes.resource', 'buildConditions.resource']});
+    return await buildRepository.find({relations: [
+      'changes',
+      'buildConditions',
+      'changes.resource',
+      'buildConditions.resource',
+      'lifeLevel'
+      ]});
   }
 
   async addMoney({country, money}: any) {
@@ -71,7 +89,7 @@ export default class ResourceController {
       }
     }
 
-    const startResources = await increaseRepository.find({relations: ['resource', 'country'], 
+    const startResources = await increaseRepository.find({relations: ['resource', 'country'],
     where: {
       country: Not(IsNull()),
       resource:Not(IsNull())
@@ -165,23 +183,23 @@ export default class ResourceController {
     unSortedIncreases.forEach(increase => {
       if(increase?.resource) {
         if(!sortedIncreases[increase?.resource.name]) {
-          sortedIncreases[increase?.resource.name] = +increase?.count; 
+          sortedIncreases[increase?.resource.name] = +increase?.count;
         } else {
-          sortedIncreases[increase?.resource.name] += +increase?.count; 
+          sortedIncreases[increase?.resource.name] += +increase?.count;
         }
       }
     });
 
-    const unSortedBuildsOwner = await buildsOwnerRepository.find({ 
+    const unSortedBuildsOwner = await buildsOwnerRepository.find({
       relations: ['country', 'build', 'build.changes', 'build.changes.resource'],
       where: { country }
     });
     unSortedBuildsOwner.forEach(buildOwner => {
       buildOwner?.build?.changes.forEach(change => {
         if(!sortedIncreases[change.resource.name]) {
-          sortedIncreases[change.resource.name] = +change.count; 
+          sortedIncreases[change.resource.name] = +change.count;
         } else {
-          sortedIncreases[change.resource.name] += +change.count; 
+          sortedIncreases[change.resource.name] += +change.count;
         }
       })
     })
@@ -200,7 +218,7 @@ export default class ResourceController {
         if(!sortedBuilds[build.build.name]) {
           sortedBuilds[build.build.name] = 1;
         } else {
-          sortedBuilds[build.build.name] += 1; 
+          sortedBuilds[build.build.name] += 1;
         }
       }
     });
@@ -334,7 +352,7 @@ export default class ResourceController {
     }
 
     if(similarTrade) {
-      const resourceOfCountry = await resourceOwnersRepository.findOne({ 
+      const resourceOfCountry = await resourceOwnersRepository.findOne({
         relations: ['country', 'resource'], where: {
           country: similarTrade.seller,
           resource: similarTrade.resource
@@ -342,7 +360,7 @@ export default class ResourceController {
 
       if(buyer && buyer?.money >= similarTrade.sum &&
         resourceOfCountry &&
-        resourceOfCountry?.count >= similarTrade.count && 
+        resourceOfCountry?.count >= similarTrade.count &&
         seller) {
             console.log(await countriesRepository.findOne(buyer));
             buyer = await countriesRepository.save({...buyer, money: buyer.money - similarTrade.sum });
@@ -353,7 +371,7 @@ export default class ResourceController {
             let isHasCountryResource;
             if(buyer) {
               isHasCountryResource = await resourceOwnersRepository.findOne({
-                country: buyer, resource: similarTrade.resource 
+                country: buyer, resource: similarTrade.resource
               });
             }
 
@@ -361,7 +379,7 @@ export default class ResourceController {
               await resourceOwnersRepository.update(isHasCountryResource,
                  { count: Number(isHasCountryResource.count) + Number(similarTrade.count) })
             } else {
-              await resourceOwnersRepository.save({ 
+              await resourceOwnersRepository.save({
                 country: buyer,
                 resource: similarTrade.resource,
                 count: similarTrade.count
@@ -460,7 +478,7 @@ export default class ResourceController {
       trades.cell(index + 2, 7).number(trade.count);
       trades.cell(index + 2, 8).number(trade.sum);
       trades.cell(index + 2, 9).string(trade.status === TradeStatus.Active ? 'Открыта' : 'Закрыта');
-    })    
+    })
 
     const countries = wb.addWorksheet('Инфо о странах');
 
@@ -479,8 +497,8 @@ export default class ResourceController {
       countries.cell(index + 2, 3).string(country.uniqTradeKey);
       countries.cell(index + 2, 4).string(country.img);
       countries.cell(index + 2, 5).number(country.money);
-    });  
-    
+    });
+
 
     const increase = wb.addWorksheet('Прирост ресурсов');
 
@@ -514,7 +532,7 @@ export default class ResourceController {
         indexOfBuilds++;
       })
     }
-  
+
     return await wb.writeToBuffer();
   }
 
@@ -646,12 +664,13 @@ export default class ResourceController {
     const buildRepository = getRepository(Build);
     const resourceCountRepository = getRepository(ResourceCountRelations);
     const resourcesRepository = getRepository(Resource);
+    const lifeLevelRepository = getRepository(LifeLevel)
     await buildRepository.delete({});
 
     const getResourcesCount = async (cell: any) => {
       const splitChangesData = table[cell].v.split(';');
         const resourcesCount = [];
-        
+
         for(const change of splitChangesData) {
           const changeSplit = change.split(',');
           const resource = await resourcesRepository.findOne({name: changeSplit[0]});
@@ -670,14 +689,13 @@ export default class ResourceController {
     const builds = [];
 
     while (table[`A${row}`]) {
-
-
         const build = {
             name: table[`B${row}`].v,
             changes: table[`C${row}`] && await getResourcesCount(`C${row}`),
             buildConditions: table[`D${row}`] && await getResourcesCount(`D${row}`),
             moneyCost: table[`E${row}`].v,
-            icon: table[`F${row}`].v
+            icon: table[`F${row}`].v,
+            lifeLevel: await lifeLevelRepository.findOne({number: table[`G${row}`].v}),
         };
 
         builds.push(build);

@@ -1,6 +1,8 @@
-import {Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinColumn, JoinTable } from "typeorm";
+import {Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinColumn, JoinTable, ManyToOne} from "typeorm";
 import { ResourceCountRelations } from ".";
-  
+import { LifeLevel } from ".";
+
+
 @Entity('build')
 export default class Build {
 
@@ -15,6 +17,10 @@ export default class Build {
 
     @Column({type: 'bigint', default: 0})
     moneyCost: number;
+
+    @ManyToOne((type) => LifeLevel, { cascade: true, onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'life_level_id' })
+    lifeLevel: LifeLevel;
 
     @ManyToMany((type) => ResourceCountRelations, { cascade: true, onDelete: 'CASCADE' })
     @JoinColumn({ name: 'change_id' })

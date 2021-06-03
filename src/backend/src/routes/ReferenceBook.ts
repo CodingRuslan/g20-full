@@ -1,6 +1,6 @@
 import StatusCodes from 'http-status-codes';
 import { Request, Response, Router } from 'express';
-import { CountriesController, ResourceController } from '../controllers';
+import {CountriesController, LifeLevelController, ResourceController} from '../controllers';
 import xlsx = require('xlsx');
 
 const router = Router();
@@ -8,6 +8,7 @@ const { OK } = StatusCodes;
 
 const countriesController = new CountriesController();
 const resourceController = new ResourceController();
+const lifeLevelController = new LifeLevelController()
 
 router.post('/set-game-status', async (req: Request, res: Response) => {
     const status = await resourceController.changeStatusOfGame();
@@ -38,6 +39,11 @@ router.get('/builds', async (req: Request, res: Response) => {
     const countries = await resourceController.getAllBuilds();
     return res.status(OK).send(countries);
 });
+
+router.get('/life-levels', async (req: Request, res: Response) => {
+    const lifeLevels = await lifeLevelController.getAllLifeLevels();
+    return res.status(OK).send(lifeLevels);
+})
 
 router.post('/create-build', async (req: Request, res: Response) => {
     const newBuild = await resourceController.createNewBuild(req.body);
@@ -70,7 +76,7 @@ router.get('/closed-trades', async (req: Request, res: Response) => {
 });
 
 router.post('/trade', async (req: Request, res: Response) => {
-    
+
     const trades = await resourceController.deleteTrade(req.body.id, req.body.uniqTradeKey);
     return res.status(OK).send(trades);
 });
@@ -99,6 +105,9 @@ router.post('/import-data', async (req: Request, res: Response) => {
 
     const increasesResources = xlsxFile.Sheets['Прирост ресурсов'];
     await resourceController.parseIncreaseTable(increasesResources);
+
+    const lifeLevels = xlsxFile.Sheets['Уровни жизни'];
+    await lifeLevelController.parseLifeLevelTable(lifeLevels);
 
     const builds = xlsxFile.Sheets['Здания'];
     await resourceController.parseBuildTable(builds);
