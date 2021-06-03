@@ -3,9 +3,9 @@
     "type": "postgres",
     "host": "localhost",
     "port": 5432,
-    "username": "postgres",
-    "password": "qwerty",
-    "database": "postgres",
+    "username": "myuser",
+    "password": "password",
+    "database": "g20_db",
     "entities": ["src/db/entities/*.ts"],
     "logging": true,
     "synchronize": true
