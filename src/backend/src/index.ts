@@ -6,6 +6,7 @@ import {createConnection} from "typeorm";
 import express, { NextFunction, Request, Response } from 'express';
 import StatusCodes from 'http-status-codes';
 import 'express-async-errors';
+var cors = require('cors')
 
 import BaseRouter from './routes';
 import log4js = require('log4js');
@@ -40,6 +41,7 @@ createConnection().then(async connection => {
     app.use(express.json());
     app.use(express.urlencoded({extended: true}));
     app.use(cookieParser());
+    app.options('*', cors())
 
     // Show routes called in console during development
     if (process.env.NODE_ENV === 'development') {
