@@ -108,6 +108,37 @@ export default class ResourceController {
     }
   }
 
+  async checkLiveLevelCountry(liveLevelNumber:number, country: Country) {
+    const buildOwnerRepository = getRepository(BuildOwner);
+    const countriesRepository = getRepository(Country);
+    const lifeLevelRepository = getRepository(LifeLevel)
+
+    let lifeLevelWillUpdate = true
+    const lifeLevel = await lifeLevelRepository.findOne({number: liveLevelNumber})
+    const conditions = lifeLevel?.condition.split(';').filter(item => !!item)
+    for (let condition of !!conditions ? conditions : []) {
+      const buildLevel = condition.split(',')[0]
+      const buildCount = condition.split(',')[1]
+
+      const UniqueBuildsForCountry = await buildOwnerRepository.createQueryBuilder('build_owner')
+        .leftJoinAndSelect('build_owner.build', 'build')
+        .leftJoinAndSelect('build.lifeLevel', 'life_level')
+        .where('build_owner.country = :countryId', {countryId: country?.id})
+        .andWhere('life_level.number = :liveLevelNumber', {liveLevelNumber: buildLevel})
+        .distinctOn(["build.id"])
+        .getMany()
+      lifeLevelWillUpdate = UniqueBuildsForCountry.length >= +buildCount ? lifeLevelWillUpdate : false
+    }
+    if (lifeLevelWillUpdate) {
+      country = await countriesRepository.save({
+        ...country,
+        lifeLevel: lifeLevel,
+        lifeLevelUpdate: new Date()
+      });
+    }
+    return country
+  }
+
   async createNewBuild(data: any) {
     const buildRepository = getRepository(Build);
     const buildOwnerRepository = getRepository(BuildOwner);
@@ -146,8 +177,19 @@ export default class ResourceController {
           }
 
           country = await countriesRepository.save({...country, money: country.money - build?.moneyCost});
+          country = await countriesRepository.findOne(data.country, {
+            relations: ['lifeLevel']
+          });
+          const newBuild = await buildOwnerRepository.save({country, build});
 
-          return await buildOwnerRepository.save({country, build});
+          if (!!country?.lifeLevel) {
+            const liveLevelNumber = (!!country?.lifeLevel?.number ? country?.lifeLevel?.number : 0)  + 1
+            await this.checkLiveLevelCountry(liveLevelNumber, country)
+          } else {
+            const liveLevelNumber = 1
+            if (!!country)  await this.checkLiveLevelCountry(liveLevelNumber, country)
+          }
+          return newBuild
         } else {
           throw new Error(`[${moment().utc().add(3, 'hours').format('HH:mm:ss')}] У страны недостаточно денег`);
         }

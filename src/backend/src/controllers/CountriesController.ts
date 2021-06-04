@@ -6,7 +6,7 @@ export default class CountriesController {
    async getAllCountries() {
       const countriesRepository = getRepository(Country);
       const countries = await countriesRepository.find({relations: [
-            // 'lifeLevel'
+            'lifeLevel'
          ]});
       return countries;
    }

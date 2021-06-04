@@ -1,4 +1,6 @@
-import {Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinColumn, JoinTable, ManyToOne} from "typeorm";
+import {
+    Entity, Column, PrimaryGeneratedColumn,
+    ManyToMany, JoinColumn, JoinTable, ManyToOne} from "typeorm";
 import { ResourceCountRelations } from ".";
 import { LifeLevel } from ".";
 
