@@ -8,7 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import {getInfoAboutCountries, getAllBuilds, createBuild,
-  getTimerResourceUpdating} from '../../actions/game';
+  getTimerResourceUpdating, getAllTrades, getAllClosedTrades} from '../../actions/game';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import {
@@ -25,18 +25,24 @@ import {
   FormControl,
   MenuItem,
   InputLabel,
-  Avatar
+  Avatar, Tabs, Tab, Paper
 } from '@material-ui/core';
 import moment from 'moment';
+import 'moment/locale/ru'  // without this line it didn't work
 import './Albom.scss';
+import InfoTab from '../../components/InfoTab/InfoTab';
+
+moment.locale('ru')
 
 const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
-                 timerDeadline, getTimerResourceUpdating}) => {
+                 timerDeadline, getTimerResourceUpdating,
+                 getAllTrades, getAllClosedTrades}) => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [countryOpenModal, setCountryOpenModal] = useState('');
   const [allBuilds, setAllBuilds] = useState([] as any[]);
+  const [tab, setTab] = useState(0);
   const [buildForm, setBuildForm] = useState<any>({
     build: null,
     uniqTradeKey: null
@@ -58,6 +64,17 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
      calcCountdownTimer(timerDeadline)
     }());
   }, []);
+
+  useEffect(() => {
+    (async function asyncFunc() {
+      if(tab === 0) {
+        await getAllTrades();
+      }
+      if(tab === 1) {
+        await getAllClosedTrades();
+      }
+    })();
+  }, [tab])
 
   const handlePopoverOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -155,6 +172,15 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
                         })}
                       </div> :
                       <div>Данная страна не развивала ни одну сферу</div>}
+                    </details>
+                    <details>
+                      <summary>Уровень жизни</summary>
+                      {
+                        !!country?.lifeLevel ?
+                          <div>{country?.lifeLevel?.name},{' '}
+                            {moment(country?.lifeLevelUpdate).utc().format('LLL')}</div> :
+                          <div>Страна еще не получила никакого уровня жизни</div>
+                      }
                     </details>
                   </CardContent>
                   <Modal
@@ -255,38 +281,7 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
                       horizontal: 'center',
                     }}
                   >
-                    <TableContainer>
-                      <Table aria-label="simple table">
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>Время</TableCell>
-                            <TableCell>Оформитель</TableCell>
-                            <TableCell>Покупатель</TableCell>
-                            <TableCell>Продавец</TableCell>
-                            <TableCell>Товар</TableCell>
-                            <TableCell>Цена</TableCell>
-                            <TableCell>Количество</TableCell>
-                            <TableCell>Стоимость</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                        {country.trades.map(row => {
-                            return <TableRow key={row.name}>
-                              <TableCell component="th" scope="row">
-                                {moment(row.time).utc().format('HH:mm:ss')}
-                              </TableCell>
-                              <TableCell>{row.owner.name}</TableCell>
-                              <TableCell>{row?.buyer?.name}</TableCell>
-                              <TableCell>{row?.seller?.name}</TableCell>
-                              <TableCell>{row.resource.name}</TableCell>
-                              <TableCell>{row.cost}</TableCell>
-                              <TableCell>{row.count}</TableCell>
-                              <TableCell>{row.sum}</TableCell>
-                            </TableRow>
-                            })}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
+                    <InfoTab trades={country.trades} />
                   </Popover>
                   </CardActions>
                 </Card>
@@ -308,5 +303,7 @@ export default compose(
     getInfoAboutCountries,
     getAllBuilds,
     createBuild,
-    getTimerResourceUpdating
+    getTimerResourceUpdating,
+    getAllTrades,
+    getAllClosedTrades
   }))(Album);
