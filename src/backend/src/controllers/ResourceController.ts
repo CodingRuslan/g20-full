@@ -10,13 +10,23 @@ import {
   IncreaseResources,
   ResourceCountRelations,
   Link,
+  BuildOwner,
   LifeLevel
 } from "../db/entities";
 const xl = require('excel4node');
 import moment from "moment";
-import BuildOwner from "src/db/entities/BuildOwner";
+const { ToadScheduler, SimpleIntervalJob, Task } = require('toad-scheduler')
+
 
 export default class ResourceController {
+  scheduler: any
+  schedulerDeadline: any
+
+  constructor() {
+    this.scheduler = new ToadScheduler()
+    this.schedulerDeadline = 0
+  }
+
   async isGameGoing() {
     const optionsRepository = getRepository(Options);
     let status = await optionsRepository.findOne({ name: 'isGameGoing'});
@@ -106,6 +116,29 @@ export default class ResourceController {
           })
       }
     }
+  }
+
+  async addResourcesForTimer(seconds: number) {
+    const task = new Task('simple task', () => {
+      this.addResources();
+      let currentTime = new Date();
+      this.schedulerDeadline = new Date(currentTime.getTime() + seconds * 1000).getTime()
+    })
+    const job = new SimpleIntervalJob({ seconds: seconds, }, task)
+
+    this.scheduler.addSimpleIntervalJob(job)
+    let currentTime = new Date();
+    this.schedulerDeadline = new Date(currentTime.getTime() + seconds * 1000).getTime();
+    return this.schedulerDeadline
+  }
+
+  async getDeadlineTimeForScheduler() {
+    return this.schedulerDeadline
+  }
+
+  async stopAddingResourcesForTimer() {
+    this.schedulerDeadline = 0
+    this.scheduler.stop()
   }
 
   async checkLiveLevelCountry(liveLevelNumber:number, country: Country) {
