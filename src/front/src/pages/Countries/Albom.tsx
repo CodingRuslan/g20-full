@@ -8,7 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import {getInfoAboutCountries, getAllBuilds, createBuild,
-  getTimerResourceUpdating} from '../../actions/game';
+  getTimerResourceUpdating, getAllTrades, getAllClosedTrades} from '../../actions/game';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import {
@@ -25,7 +25,7 @@ import {
   FormControl,
   MenuItem,
   InputLabel,
-  Avatar
+  Avatar, Tabs, Tab, Paper
 } from '@material-ui/core';
 import moment from 'moment';
 import 'moment/locale/ru'  // without this line it didn't work
@@ -34,12 +34,14 @@ import './Albom.scss';
 moment.locale('ru')
 
 const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
-                 timerDeadline, getTimerResourceUpdating}) => {
+                 timerDeadline, getTimerResourceUpdating,
+                 getAllTrades, getAllClosedTrades}) => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [countryOpenModal, setCountryOpenModal] = useState('');
   const [allBuilds, setAllBuilds] = useState([] as any[]);
+  const [tab, setTab] = useState(0);
   const [buildForm, setBuildForm] = useState<any>({
     build: null,
     uniqTradeKey: null
@@ -59,6 +61,17 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
      calcCountdownTimer(timerDeadline)
     }());
   }, []);
+
+  useEffect(() => {
+    (async function asyncFunc() {
+      if(tab === 0) {
+        await getAllTrades();
+      }
+      if(tab === 1) {
+        await getAllClosedTrades();
+      }
+    })();
+  }, [tab])
 
   const handlePopoverOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -265,6 +278,16 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
                       horizontal: 'center',
                     }}
                   >
+                    <Tabs
+                      value={tab}
+                      indicatorColor="primary"
+                      textColor="primary"
+                      onChange={(e, newValue) => setTab(newValue)}
+                      aria-label="disabled tabs example"
+                    >
+                      <Tab label="Открытые" />
+                      <Tab label="Закрытые" />
+                    </Tabs>
                     <TableContainer>
                       <Table aria-label="simple table">
                         <TableHead>
@@ -318,5 +341,7 @@ export default compose(
     getInfoAboutCountries,
     getAllBuilds,
     createBuild,
-    getTimerResourceUpdating
+    getTimerResourceUpdating,
+    getAllTrades,
+    getAllClosedTrades
   }))(Album);
