@@ -332,8 +332,9 @@ const getAllCountries = () => async dispatch => {
     dispatch({ type: 'SET_LOADING', payload: true});
     try {
       const {data} = await referenceBookService.setTimerResourceUpdating(body);
+      dispatch({ type: 'SET_TIMER', payload: data});
 
-      return data;
+      return Number(data);
     } catch ({ response: {data} }) {
       dispatch({ type: 'SET_ERROR', payload: data.error});
       return data;
@@ -343,11 +344,11 @@ const getAllCountries = () => async dispatch => {
   };
 
   const getTimerResourceUpdating = () => async dispatch => {
-    dispatch({ type: 'SET_LOADING', payload: true});
     try {
-      const deadlineTimer = await referenceBookService.getTimerResourceUpdating();
-      console.log('deadlineTimer', deadlineTimer)
-      return Number(deadlineTimer.data)
+      const {data} = await referenceBookService.getTimerResourceUpdating();
+      dispatch({ type: 'SET_TIMER', payload: data});
+
+      return Number(data)
     } catch ({ response: {data} }) {
       dispatch({ type: 'SET_ERROR', payload: data.error});
       return data;
@@ -360,6 +361,8 @@ const getAllCountries = () => async dispatch => {
     dispatch({ type: 'SET_LOADING', payload: true});
     try {
       const {data} = await referenceBookService.deleteTimerResourceUpdating();
+      dispatch({ type: 'REMOVE_TIMER'});
+
       return data;
     } catch ({ response: {data} }) {
       dispatch({ type: 'SET_ERROR', payload: data.error});

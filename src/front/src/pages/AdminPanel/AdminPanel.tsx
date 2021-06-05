@@ -41,7 +41,8 @@ const AdminPanel = ({
   addMoney,
   setTimerResourceUpdating,
   getTimerResourceUpdating,
-  deleteTimerResourceUpdating
+  deleteTimerResourceUpdating,
+  timerDeadline
 }) => {
 
     const [isRunGame, setIsRunGame] = useState(true);
@@ -59,7 +60,6 @@ const AdminPanel = ({
       money: 0,
       timer: 0
     });
-    const [timerDeadline, setTimerDeadline] = useState(0)
     const [countdownTimerValues, setCountdownTimerValues] = useState<any>({
       days: 0,
       hours: 0,
@@ -83,9 +83,8 @@ const AdminPanel = ({
         setCountries(countries);
         setResources(resources);
         setIsRunGame(gameStatus);
-        const timer = await getTimerResourceUpdating()
-        !!Number(timer) && await setTimerDeadline(timer)
-        !!timer && calcCountdownTimer(timer)
+        await getTimerResourceUpdating()
+        calcCountdownTimer(timerDeadline)
       })();
     }, []);
 
@@ -109,15 +108,15 @@ const AdminPanel = ({
         const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        setCountdownTimerValues({days, hours, minutes, seconds});
+        seconds >= 0 && setCountdownTimerValues({days, hours, minutes, seconds});
 
         // If the count down is finished, write some text
-        if (distance < 0 || !distance) {
+        if (distance <= 0 || !distance) {
           clearInterval(interval);
           const newDeadline = await getTimerResourceUpdating()
           const now = new Date().getTime();
           if (newDeadline - now > 0) {
-            await setTimerDeadline(newDeadline)
+            // await setTimerDeadline(newDeadline)
             calcCountdownTimer(newDeadline)
           }
         }
@@ -264,10 +263,8 @@ const AdminPanel = ({
               variant="contained"
               color="primary"
               onClick={async () => {
-                const timer = await setTimerResourceUpdating({seconds: resourceForm.timer})
-
-                await setTimerDeadline(timer)
-                calcCountdownTimer(timer)
+                await setTimerResourceUpdating({seconds: resourceForm.timer})
+                calcCountdownTimer(timerDeadline)
                 setOpenTimerModal(false);
               }}
             >
@@ -336,7 +333,7 @@ const AdminPanel = ({
               color="primary"
               onClick={() => {
                 deleteTimerResourceUpdating()
-                setTimerDeadline(0)
+                // setTimerDeadline(0)
               }
               }
             >
@@ -410,6 +407,7 @@ const AdminPanel = ({
   }
 
 const mapToStateToProps = ({ game }) => ({
+  timerDeadline: game.timerDeadline
   });
 
 export default compose(
