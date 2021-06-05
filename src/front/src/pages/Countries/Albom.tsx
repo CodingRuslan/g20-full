@@ -7,11 +7,10 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import {Link} from 'react-router-dom';
 import {getInfoAboutCountries, getAllBuilds, createBuild} from '../../actions/game';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { 
+import {
   Popover,
   Table,
   TableContainer,
@@ -36,7 +35,7 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild}) =>
   const [openModal, setOpenModal] = useState(false);
   const [countryOpenModal, setCountryOpenModal] = useState('');
   const [allBuilds, setAllBuilds] = useState([] as any[]);
-  const [buildForm, setBuildForm] = useState<any>({ 
+  const [buildForm, setBuildForm] = useState<any>({
     build: null,
     uniqTradeKey: null
   });
@@ -88,8 +87,8 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild}) =>
                       Бюджет: {country.money}
                     </Typography>
                     <div className="resources-list">
-                      {country.resources.map((resource) => {
-                        return <Typography>
+                      {country.resources.map((resource, index) => {
+                        return <Typography key={`Resource${index}`}>
                           {resource.resource.name} - {resource.count}&nbsp;
                           <span className={country?.increases[resource.resource.name] > 0 ? 'increases-green' : 'increases-red'}>
                             ({country?.increases[resource?.resource?.name]})
@@ -99,10 +98,10 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild}) =>
                     </div>
                     <details>
                       <summary>Развитые сферы</summary>
-                      {Object.keys(country.builds).length ? 
+                      {Object.keys(country.builds).length ?
                       <div>
-                        {Object.keys(country.builds).map(build => {
-                          return <p style={{margin: 0}}>{build}: {country.builds[build]}</p>
+                        {Object.keys(country.builds).map((build, index) => {
+                          return <p style={{margin: 0}} key={`Build${index}`}>{build}: {country.builds[build]}</p>
                         })}
                       </div> :
                       <div>Данная страна не развивала ни одну сферу</div>}
@@ -124,7 +123,7 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild}) =>
                                 onChange={(e:any) => setBuildForm({ ...buildForm, build: e.target.value})}
                                 value={buildForm.build}
                             >
-                                {allBuilds.map((build) => <MenuItem value={build.id}>
+                                {allBuilds.map((build) => <MenuItem key={build.id} value={build.id}>
                                   <div style={{display: 'flex', alignItems: 'center'}}>
                                     <div style={{marginRight: '10px'}}>
                                       <Avatar src={build.icon}/>
@@ -133,16 +132,18 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild}) =>
                                       <div><b>{build.name}</b></div>
                                       <div>
                                         <p className="build-green-text">Дополнительный прирост ресурсов:</p>
-                                          {build.changes.map((change) => 
-                                            <p className="build-little-text">{change.resource.name}: <b>{change.count}</b></p>)
-                                          }
+                                          {build.changes.map((change, index) =>
+                                            <p key={`GreenChange${index}`} className="build-little-text">
+                                              {change.resource.name}:<b>{change.count}</b>
+                                            </p>)}
                                       </div>
                                       <div>
                                         <p className="build-red-text">Необходимые для развития ресурсы:</p>
                                         <p className="build-little-text">Бюджет: {build.moneyCost}</p>
-                                          {build.buildConditions.map((change) => 
-                                            <p className="build-little-text">{change.resource.name}: <b>{change.count}</b></p>)
-                                          }
+                                          {build.buildConditions.map((change, index) =>
+                                            <p key={`LittleChange${index}`} className="build-little-text">
+                                              {change.resource.name}: <b>{change.count}</b>
+                                            </p>)}
                                       </div>
                                     </div>
                                   </div>
@@ -205,7 +206,7 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild}) =>
                       vertical: 'top',
                       horizontal: 'center',
                     }}
-                  > 
+                  >
                     <TableContainer>
                       <Table aria-label="simple table">
                         <TableHead>
