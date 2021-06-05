@@ -107,7 +107,7 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
             <Typography component="h1" className="page-title" variant="h2" align="center" gutterBottom>
               Страны
             </Typography>
-            {timerDeadline && <Typography className="mb-30" align="center" style={{color: "white"}}>
+            {!!timerDeadline && <Typography className="mb-30" align="center" style={{color: "white"}}>
               Время до производстава ресурсов:{' '}
               {countdownTimerValues.days} дней{' '}
               {countdownTimerValues.hours} часов{' '}
