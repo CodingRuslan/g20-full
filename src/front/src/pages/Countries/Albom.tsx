@@ -135,8 +135,8 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
                       Бюджет: {country.money}
                     </Typography>
                     <div className="resources-list">
-                      {country.resources.map((resource) => {
-                        return <Typography>
+                      {country.resources.map((resource, index) => {
+                        return <Typography key={`Resource${index}`}>
                           {resource.resource.name} - {resource.count}&nbsp;
                           <span className={country?.increases[resource.resource.name] > 0 ? 'increases-green' : 'increases-red'}>
                             ({country?.increases[resource?.resource?.name]})
@@ -148,8 +148,8 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
                       <summary>Развитые сферы</summary>
                       {Object.keys(country.builds).length ?
                       <div>
-                        {Object.keys(country.builds).map(build => {
-                          return <p style={{margin: 0}}>{build}: {country.builds[build]}</p>
+                        {Object.keys(country.builds).map((build, index) => {
+                          return <p style={{margin: 0}} key={`Build${index}`}>{build}: {country.builds[build]}</p>
                         })}
                       </div> :
                       <div>Данная страна не развивала ни одну сферу</div>}
@@ -171,7 +171,7 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
                                 onChange={(e:any) => setBuildForm({ ...buildForm, build: e.target.value})}
                                 value={buildForm.build}
                             >
-                                {allBuilds.map((build) => <MenuItem value={build.id}>
+                                {allBuilds.map((build) => <MenuItem key={build.id} value={build.id}>
                                   <div style={{display: 'flex', alignItems: 'center'}}>
                                     <div style={{marginRight: '10px'}}>
                                       <Avatar src={build.icon}/>
