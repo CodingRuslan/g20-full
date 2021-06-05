@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { 
+import {
     Typography,
     Button,
     Modal,
@@ -9,7 +9,7 @@ import {
   FormControl,
   InputLabel,
   } from '@material-ui/core';
-  import { 
+  import {
     getAllResources,
     getAllCountries,
     addResourceToCountry,
@@ -45,7 +45,7 @@ const AdminPanel = ({
     const [typeOfModal, setTypeOfModal] = useState('');
     const [countries, setCountries] = useState([] as any[]);
     const [resources, setResources] = useState([] as any[]);
-    const [resourceForm, setResourceForm] = useState<any>({ 
+    const [resourceForm, setResourceForm] = useState<any>({
       country: '',
       resource: '',
       count: '',
@@ -73,7 +73,7 @@ const AdminPanel = ({
     const onChangeState = (value, name) => {
       setResourceForm({ ...resourceForm, [name]: value });
     }
-  
+
     return (
         isValidPass ? <div className="admin-container">
           <Modal
@@ -170,7 +170,7 @@ const AdminPanel = ({
                         ) {
                           evt.preventDefault();
                         }
-                    }}  
+                    }}
                 />
                 <Button
                     className="mb-30"
@@ -190,7 +190,7 @@ const AdminPanel = ({
             </div>
         </Modal>
           <Typography component="h1" variant="h5" className="mb-30">
-          Онлайн политико-экономическая кейс-игра<br /> «Большая двадцатка (G20)»
+              Панель администратора
           </Typography>
               <Button
                   className="mb-30"
@@ -290,7 +290,7 @@ const AdminPanel = ({
 
 const mapToStateToProps = ({ game }) => ({
   });
-  
+
 export default compose(
     connect(mapToStateToProps, {
       getAllResources, setGameStatus,

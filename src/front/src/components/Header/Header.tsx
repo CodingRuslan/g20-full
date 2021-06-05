@@ -17,7 +17,7 @@ const Header = ({getHeaderLinks, links}) => {
     return <div className="header">
         <Grid container spacing={1} className="header-container">
             <Grid item md={4} xs={12}>
-                <h1 className="header-container-title">КЕЙС-ИГРА G20</h1>
+                <h1 className="header-container-title">УправLand</h1>
             </Grid>
             <Grid item md={8} xs={12} container spacing={2}>
                 <Grid item>
@@ -39,7 +39,7 @@ const Header = ({getHeaderLinks, links}) => {
 const mapToStateToProps = ({ game }) => ({
     links: game.links
   });
-  
+
   export default compose(
     connect(mapToStateToProps, {
         getHeaderLinks
