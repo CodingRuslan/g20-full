@@ -48,6 +48,8 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
     seconds: 0,
   });
 
+  const sortedCountries = countries.sort((country, nextCountry) => country.name - nextCountry.name);
+
   useEffect(() => {
     (async function() {
      const [builds] = await Promise.all([getAllBuilds(), getInfoAboutCountries()]);
@@ -119,7 +121,7 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
         <Container className="cardGrid" maxWidth="md">
           {/* End hero unit */}
           <Grid container spacing={4}>
-            {countries.map((country) => (
+            {sortedCountries.map((country) => (
               <Grid item key={country.id} xs={12} sm={6} md={4}>
                 <Card className="card">
                   <CardMedia
