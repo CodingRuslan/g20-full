@@ -4,7 +4,8 @@ const initialState = {
   countries: [],
   error: '',
   success: '',
-  links: []
+  links: [],
+  timerDeadline: 0
 };
 
 export default (state = initialState, action) => {
@@ -31,6 +32,18 @@ export default (state = initialState, action) => {
       return {
         ...state,
         countries: action.payload,
+      };
+
+    case 'SET_TIMER':
+      return {
+        ...state,
+        timerDeadline: action.payload,
+      };
+
+    case 'REMOVE_TIMER':
+      return {
+        ...state,
+        timerDeadline: 0,
       };
 
     case 'SET_LOADING':

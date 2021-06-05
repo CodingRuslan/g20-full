@@ -9,7 +9,7 @@ const getAllCountries = () => async dispatch => {
   dispatch({ type: 'SET_LOADING', payload: true});
     try {
         const {data} = await referenceBookService.getAllCountries();
-    
+
         return data;
       } catch ({ response: {data} }) {
         dispatch({ type: 'SET_ERROR', payload: data.error});
@@ -17,14 +17,14 @@ const getAllCountries = () => async dispatch => {
       } finally {
         dispatch({ type: 'SET_LOADING', payload: false});
       }
-    
+
   };
 
   const addResources = () => async dispatch => {
     dispatch({ type: 'SET_LOADING', payload: true});
       try {
           const {data} = await referenceBookService.addResources();
-      
+
           return data;
         } catch ({ response: {data} }) {
           dispatch({ type: 'SET_ERROR', payload: data.error});
@@ -32,14 +32,14 @@ const getAllCountries = () => async dispatch => {
         } finally {
           dispatch({ type: 'SET_LOADING', payload: false});
         }
-      
+
     };
 
   const getGameStatus = () => async dispatch => {
     dispatch({ type: 'SET_LOADING', payload: true});
       try {
           const {data} = await referenceBookService.getGameStatus();
-      
+
           return data;
         } catch ({ response: {data} }) {
           dispatch({ type: 'SET_ERROR', payload: data.error});
@@ -47,7 +47,7 @@ const getAllCountries = () => async dispatch => {
         } finally {
           dispatch({ type: 'SET_LOADING', payload: false});
         }
-      
+
     };
 
     const setGameStatus = () => async dispatch => {
@@ -60,14 +60,14 @@ const getAllCountries = () => async dispatch => {
           } finally {
             dispatch({ type: 'SET_LOADING', payload: false});
           }
-        
+
       };
 
   const addResourceToCountry = body => async dispatch => {
     dispatch({ type: 'SET_LOADING', payload: true});
       try {
           const {data} = await referenceBookService.addResourceToCountry(body);
-      
+
           return data;
         } catch ({ response: {data} }) {
           dispatch({ type: 'SET_ERROR', payload: data.error});
@@ -75,14 +75,14 @@ const getAllCountries = () => async dispatch => {
         } finally {
           dispatch({ type: 'SET_LOADING', payload: false});
         }
-      
+
     };
 
   const addResourceToAll = ({resource, count}) => async dispatch => {
       dispatch({ type: 'SET_LOADING', payload: true});
         try {
             const {data} = await referenceBookService.addResourceToAll({resource, count});
-        
+
             return data;
           } catch ({ response: {data} }) {
             dispatch({ type: 'SET_ERROR', payload: data.error});
@@ -90,14 +90,14 @@ const getAllCountries = () => async dispatch => {
           } finally {
             dispatch({ type: 'SET_LOADING', payload: false});
           }
-        
+
     };
 
   const getAllResources = () => async dispatch => {
     dispatch({ type: 'SET_LOADING', payload: true});
     try {
         const {data} = await referenceBookService.getAllResources();
-    
+
         return data;
       } catch ({ response: {data} }) {
         dispatch({ type: 'SET_ERROR', payload: data.error});
@@ -105,14 +105,14 @@ const getAllCountries = () => async dispatch => {
       } finally {
         dispatch({ type: 'SET_LOADING', payload: false});
       }
-    
+
   };
 
   const createTrade = data => async dispatch => {
     dispatch({ type: 'SET_LOADING', payload: true});
     try {
         const result = await referenceBookService.createTrade(data);
-    
+
         if(result.data.status === 'active') {
           dispatch({ type: 'ADD_TRADES', payload: result.data});
           dispatch({ type: 'CLEAR_ERROR'});
@@ -140,7 +140,7 @@ const getAllCountries = () => async dispatch => {
     dispatch({ type: 'SET_LOADING', payload: true});
     try {
         const {data} = await referenceBookService.getAllTrades();
-    
+
         dispatch({ type: 'GET_TRADES', payload: data})
 
         return data;
@@ -150,14 +150,14 @@ const getAllCountries = () => async dispatch => {
       } finally {
         dispatch({ type: 'SET_LOADING', payload: false});
       }
-    
+
   };
 
   const getAllAds = () => async dispatch => {
     dispatch({ type: 'SET_LOADING', payload: true});
     try {
         const {data} = await referenceBookService.getAllAds();
-    
+
         dispatch({ type: 'GET_TRADES', payload: data})
 
         return data;
@@ -167,14 +167,14 @@ const getAllCountries = () => async dispatch => {
       } finally {
         dispatch({ type: 'SET_LOADING', payload: false});
       }
-    
+
   };
 
   const getAllClosedTrades = () => async dispatch => {
     dispatch({ type: 'SET_LOADING', payload: true});
     try {
         const {data} = await referenceBookService.getAllClosedTrades();
-    
+
         dispatch({ type: 'GET_TRADES', payload: data})
 
         return data;
@@ -184,7 +184,7 @@ const getAllCountries = () => async dispatch => {
       } finally {
         dispatch({ type: 'SET_LOADING', payload: false});
       }
-    
+
   };
 
   const getInfoAboutCountries = () => async dispatch => {
@@ -223,7 +223,7 @@ const getAllCountries = () => async dispatch => {
       if(data.affected === 1) {
         dispatch({ type: 'DELETE_TRADE', payload: id});
       }
-      
+
       dispatch({ type: 'CLEAR_ERROR'});
       dispatch({
         type: 'SET_SUCCESS',
@@ -267,7 +267,7 @@ const getAllCountries = () => async dispatch => {
       } finally {
         dispatch({ type: 'SET_LOADING', payload: false});
       }
-    
+
   };
 
   const clearMessage = () => async dispatch => {
@@ -294,7 +294,7 @@ const getAllCountries = () => async dispatch => {
       } finally {
         dispatch({ type: 'SET_LOADING', payload: false});
       }
-    
+
   };
 
   const addMoney = body => async dispatch => {
@@ -309,7 +309,7 @@ const getAllCountries = () => async dispatch => {
       } finally {
         dispatch({ type: 'SET_LOADING', payload: false});
       }
-    
+
   };
 
   const getHeaderLinks = () => async dispatch => {
@@ -325,7 +325,51 @@ const getAllCountries = () => async dispatch => {
       } finally {
         dispatch({ type: 'SET_LOADING', payload: false});
       }
-    
+
+  };
+
+  const setTimerResourceUpdating = body => async dispatch => {
+    dispatch({ type: 'SET_LOADING', payload: true});
+    try {
+      const {data} = await referenceBookService.setTimerResourceUpdating(body);
+      dispatch({ type: 'SET_TIMER', payload: data});
+
+      return Number(data);
+    } catch ({ response: {data} }) {
+      dispatch({ type: 'SET_ERROR', payload: data.error});
+      return data;
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false});
+    }
+  };
+
+  const getTimerResourceUpdating = () => async dispatch => {
+    try {
+      const {data} = await referenceBookService.getTimerResourceUpdating();
+      dispatch({ type: 'SET_TIMER', payload: data});
+
+      return Number(data)
+    } catch ({ response: {data} }) {
+      dispatch({ type: 'SET_ERROR', payload: data.error});
+      return data;
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false});
+    }
+  };
+
+  const deleteTimerResourceUpdating = () => async dispatch => {
+    dispatch({ type: 'SET_LOADING', payload: true});
+    try {
+      const {data} = await referenceBookService.deleteTimerResourceUpdating();
+      dispatch({ type: 'REMOVE_TIMER'});
+
+      return data;
+    } catch ({ response: {data} }) {
+      dispatch({ type: 'SET_ERROR', payload: data.error});
+      return data;
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false});
+    }
   };
 
   const downloadFile = (buffer, nameOfFile) => {
@@ -358,6 +402,8 @@ const getAllCountries = () => async dispatch => {
     addResources,
     addMoney,
     getHeaderLinks,
-    clearSuccessMessage
+    clearSuccessMessage,
+    setTimerResourceUpdating,
+    getTimerResourceUpdating,
+    deleteTimerResourceUpdating
   };
-    

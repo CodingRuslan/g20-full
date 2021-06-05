@@ -7,7 +7,8 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import {getInfoAboutCountries, getAllBuilds, createBuild} from '../../actions/game';
+import {getInfoAboutCountries, getAllBuilds, createBuild,
+  getTimerResourceUpdating} from '../../actions/game';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import {
@@ -29,7 +30,8 @@ import {
 import moment from 'moment';
 import './Albom.scss';
 
-const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild}) => {
+const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
+                 timerDeadline, getTimerResourceUpdating}) => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [openModal, setOpenModal] = useState(false);
@@ -39,11 +41,19 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild}) =>
     build: null,
     uniqTradeKey: null
   });
+  const [countdownTimerValues, setCountdownTimerValues] = useState<any>({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
   useEffect(() => {
     (async function() {
      const [builds] = await Promise.all([getAllBuilds(), getInfoAboutCountries()]);
      setAllBuilds(builds);
+     await getTimerResourceUpdating()
+     calcCountdownTimer(timerDeadline)
     }());
   }, []);
 
@@ -54,6 +64,37 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild}) =>
   const handlePopoverClose = () => {
     setAnchorEl(null);
   };
+
+  const calcCountdownTimer = (deadline) => {
+    const countDownDate = +deadline;
+
+    const interval = setInterval( async function() {
+
+      // Get today's date and time
+      const now = new Date().getTime();
+
+      // Find the distance between now and the count down date
+      const distance = countDownDate - now;
+
+      // Time calculations for days, hours, minutes and seconds
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      seconds >= 0 && setCountdownTimerValues({days, hours, minutes, seconds});
+
+      // If the count down is finished, write some text
+      if (distance <= 0 || !distance) {
+        clearInterval(interval);
+        const newDeadline = await getTimerResourceUpdating()
+        const now = new Date().getTime();
+        if (newDeadline - now > 0) {
+          // await setTimerDeadline(newDeadline)
+          calcCountdownTimer(newDeadline)
+        }
+      }
+    }, 1000);
+  }
 
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
@@ -66,6 +107,13 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild}) =>
             <Typography component="h1" className="page-title" variant="h2" align="center" gutterBottom>
               Страны
             </Typography>
+            {!!timerDeadline && <Typography className="mb-30" align="center" style={{color: "white"}}>
+              Время до производстава ресурсов:{' '}
+              {countdownTimerValues.days} дней{' '}
+              {countdownTimerValues.hours} часов{' '}
+              {countdownTimerValues.minutes} минут{' '}
+              {countdownTimerValues.seconds} секунд
+            </Typography>}
           </Container>
         </div>
         <Container className="cardGrid" maxWidth="md">
@@ -132,18 +180,16 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild}) =>
                                       <div><b>{build.name}</b></div>
                                       <div>
                                         <p className="build-green-text">Дополнительный прирост ресурсов:</p>
-                                          {build.changes.map((change, index) =>
-                                            <p key={`GreenChange${index}`} className="build-little-text">
-                                              {change.resource.name}:<b>{change.count}</b>
-                                            </p>)}
+                                          {build.changes.map((change) =>
+                                            <p className="build-little-text">{change.resource.name}: <b>{change.count}</b></p>)
+                                          }
                                       </div>
                                       <div>
                                         <p className="build-red-text">Необходимые для развития ресурсы:</p>
                                         <p className="build-little-text">Бюджет: {build.moneyCost}</p>
-                                          {build.buildConditions.map((change, index) =>
-                                            <p key={`LittleChange${index}`} className="build-little-text">
-                                              {change.resource.name}: <b>{change.count}</b>
-                                            </p>)}
+                                          {build.buildConditions.map((change) =>
+                                            <p className="build-little-text">{change.resource.name}: <b>{change.count}</b></p>)
+                                          }
                                       </div>
                                     </div>
                                   </div>
@@ -251,12 +297,14 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild}) =>
 }
 
 const mapToStateToProps = ({ game }) => ({
-  countries: game.countries
+  countries: game.countries,
+  timerDeadline: game.timerDeadline
 });
 
 export default compose(
   connect(mapToStateToProps, {
     getInfoAboutCountries,
     getAllBuilds,
-    createBuild
+    createBuild,
+    getTimerResourceUpdating
   }))(Album);

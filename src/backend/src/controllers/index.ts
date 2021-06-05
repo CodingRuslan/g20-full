@@ -1,4 +1,5 @@
 import CountriesController from './CountriesController';
 import ResourceController from './ResourceController';
+import LifeLevelController from "./LifeLevelController";
 
-export { CountriesController, ResourceController }
+export { CountriesController, ResourceController, LifeLevelController }
