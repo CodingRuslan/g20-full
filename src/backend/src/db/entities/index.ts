@@ -7,6 +7,7 @@ import Build from './Build';
 import IncreaseResources from './IncreaseResources';
 import ResourceCountRelations from './ResourceCountRelations';
 import Link from './Link';
+import LifeLevel from "./LifeLevel";
 
 export {
     Country,
@@ -18,5 +19,6 @@ export {
     Build,
     IncreaseResources,
     ResourceCountRelations,
-    Link
+    Link,
+    LifeLevel
  }

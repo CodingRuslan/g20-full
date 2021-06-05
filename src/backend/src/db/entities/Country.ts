@@ -1,4 +1,5 @@
-import {Entity, Column, PrimaryGeneratedColumn} from "typeorm";
+import {Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn} from "typeorm";
+import {LifeLevel} from "./index";
 
 @Entity('country')
 export default class Country {
@@ -17,4 +18,11 @@ export default class Country {
 
     @Column({type: 'int', default: 0, nullable: false})
     money: number;
+
+    @Column({ type: 'timestamp', nullable: true })
+    lifeLevelUpdate: Date;
+
+    @ManyToOne((type) => LifeLevel, { cascade: true, onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'life_level_id' })
+    lifeLevel: LifeLevel;
 }
