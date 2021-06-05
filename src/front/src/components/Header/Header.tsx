@@ -13,7 +13,6 @@ const Header = ({getHeaderLinks, links}) => {
             await getHeaderLinks();
         })()
     }, []);
-    console.log(links);
     return <div className="header">
         <Grid container spacing={1} className="header-container">
             <Grid item md={4} xs={12}>
@@ -39,7 +38,7 @@ const Header = ({getHeaderLinks, links}) => {
 const mapToStateToProps = ({ game }) => ({
     links: game.links
   });
-  
+
   export default compose(
     connect(mapToStateToProps, {
         getHeaderLinks

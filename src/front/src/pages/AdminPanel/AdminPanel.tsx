@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { 
+import {
     Typography,
     Button,
     Modal,
@@ -9,7 +9,7 @@ import {
   FormControl,
   InputLabel,
   } from '@material-ui/core';
-  import { 
+  import {
     getAllResources,
     getAllCountries,
     addResourceToCountry,
@@ -19,7 +19,10 @@ import {
     getGameStatus,
     setGameStatus,
     addResources,
-    addMoney
+    addMoney,
+    setTimerResourceUpdating,
+    getTimerResourceUpdating,
+    deleteTimerResourceUpdating
   } from '../../actions/game';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -35,28 +38,41 @@ const AdminPanel = ({
   getGameStatus,
   setGameStatus,
   addResources,
-  addMoney
+  addMoney,
+  setTimerResourceUpdating,
+  getTimerResourceUpdating,
+  deleteTimerResourceUpdating,
+  timerDeadline
 }) => {
 
     const [isRunGame, setIsRunGame] = useState(true);
     const [isValidPass, setIsValidPass] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [openMoneyModal, setOpenMoneyModal] = useState(false);
+    const [openTimerModal, setOpenTimerModal] = useState(false)
     const [typeOfModal, setTypeOfModal] = useState('');
     const [countries, setCountries] = useState([] as any[]);
     const [resources, setResources] = useState([] as any[]);
-    const [resourceForm, setResourceForm] = useState<any>({ 
+    const [resourceForm, setResourceForm] = useState<any>({
       country: '',
       resource: '',
       count: '',
-      money: 0
+      money: 0,
+      timer: 0
     });
+    const [countdownTimerValues, setCountdownTimerValues] = useState<any>({
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    });
+
 
     let selectXLSref = React.createRef();
 
     useEffect(() => {
         const pass = prompt('Пожалуйста введите пароль');
-        if(pass === 'cgschoolg20') {
+        if(pass === '') { // cgschoolg20
             setIsValidPass(true);
         }
     }, []);
@@ -67,13 +83,46 @@ const AdminPanel = ({
         setCountries(countries);
         setResources(resources);
         setIsRunGame(gameStatus);
+        await getTimerResourceUpdating()
+        calcCountdownTimer(timerDeadline)
       })();
     }, []);
 
     const onChangeState = (value, name) => {
       setResourceForm({ ...resourceForm, [name]: value });
     }
-  
+
+    const calcCountdownTimer = (deadline) => {
+      const countDownDate = +deadline;
+
+      const interval = setInterval( async function() {
+
+        // Get today's date and time
+        const now = new Date().getTime();
+
+        // Find the distance between now and the count down date
+        const distance = countDownDate - now;
+
+        // Time calculations for days, hours, minutes and seconds
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        seconds >= 0 && setCountdownTimerValues({days, hours, minutes, seconds});
+
+        // If the count down is finished, write some text
+        if (distance <= 0 || !distance) {
+          clearInterval(interval);
+          const newDeadline = await getTimerResourceUpdating()
+          const now = new Date().getTime();
+          if (newDeadline - now > 0) {
+            // await setTimerDeadline(newDeadline)
+            calcCountdownTimer(newDeadline)
+          }
+        }
+      }, 1000);
+    }
+
     return (
         isValidPass ? <div className="admin-container">
           <Modal
@@ -170,7 +219,7 @@ const AdminPanel = ({
                         ) {
                           evt.preventDefault();
                         }
-                    }}  
+                    }}
                 />
                 <Button
                     className="mb-30"
@@ -189,9 +238,53 @@ const AdminPanel = ({
                 </Button>
             </div>
         </Modal>
+        <Modal
+          className="modal"
+          open={openTimerModal}
+          onClose={() => setOpenTimerModal(false)}
+        >
+          <div className="modal-template">
+            <Typography component="h1" variant="h5" className="mb-30">Установка таймера на пополнение ресурсов</Typography>
+            <TextField
+              required
+              id="address1"
+              name="timer"
+              label="Интервал срабатывания таймера (в секнудах)"
+              fullWidth
+              style={{marginBottom: '30px'}}
+              type="number"
+              value={resourceForm.timer}
+              onChange={(e:any) => onChangeState(e.target.value, e.target.name)}
+            />
+            <Button
+              className="mb-30"
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              onClick={async () => {
+                await setTimerResourceUpdating({seconds: resourceForm.timer})
+                calcCountdownTimer(timerDeadline)
+                setOpenTimerModal(false);
+              }}
+            >
+              Установить
+            </Button>
+          </div>
+        </Modal>
+
           <Typography component="h1" variant="h5" className="mb-30">
           Онлайн политико-экономическая кейс-игра<br /> «Большая двадцатка (G20)»
           </Typography>
+          { !!timerDeadline &&
+            <p className="mb-30">
+              Время до производстава ресурсов:{' '}
+              {countdownTimerValues.days} дней{' '}
+              {countdownTimerValues.hours} часов{' '}
+              {countdownTimerValues.minutes} минут{' '}
+              {countdownTimerValues.seconds} секунд
+            </p>
+          }
               <Button
                   className="mb-30"
                 type="submit"
@@ -222,6 +315,31 @@ const AdminPanel = ({
             >
               Закончить производство ресурсов
             </Button>
+          {!timerDeadline ? <Button
+            className="mb-30"
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            onClick={() => setOpenTimerModal(true)}
+          >
+            Установить таймер на производство ресурсов
+          </Button> :
+            <Button
+              className="mb-30"
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                deleteTimerResourceUpdating()
+                // setTimerDeadline(0)
+              }
+              }
+            >
+              Остановить таймер на производство ресурсов
+            </Button>
+          }
             <Button
                 className="mb-30"
               type="submit"
@@ -289,13 +407,17 @@ const AdminPanel = ({
   }
 
 const mapToStateToProps = ({ game }) => ({
+  timerDeadline: game.timerDeadline
   });
-  
+
 export default compose(
     connect(mapToStateToProps, {
       getAllResources, setGameStatus,
       getAllCountries, addResourceToCountry,
       addResourceToAll, importDatabase,
       downloadTradeDatabase, getGameStatus,
-      addResources, addMoney
+      addResources, addMoney,
+      setTimerResourceUpdating,
+      getTimerResourceUpdating,
+      deleteTimerResourceUpdating
 }))(AdminPanel);
