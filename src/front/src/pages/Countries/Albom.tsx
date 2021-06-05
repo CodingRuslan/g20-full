@@ -28,7 +28,10 @@ import {
   Avatar
 } from '@material-ui/core';
 import moment from 'moment';
+import 'moment/locale/ru'  // without this line it didn't work
 import './Albom.scss';
+
+moment.locale('ru')
 
 const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
                  timerDeadline, getTimerResourceUpdating}) => {
@@ -153,6 +156,15 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
                         })}
                       </div> :
                       <div>Данная страна не развивала ни одну сферу</div>}
+                    </details>
+                    <details>
+                      <summary>Уровень жизни</summary>
+                      {
+                        !!country?.lifeLevel ?
+                          <div>{country?.lifeLevel?.name},{' '}
+                            {moment(country?.lifeLevelUpdate).utc().format('LLL')}</div> :
+                          <div>Страна еще не получила никакого уровня жизни</div>
+                      }
                     </details>
                   </CardContent>
                   <Modal
