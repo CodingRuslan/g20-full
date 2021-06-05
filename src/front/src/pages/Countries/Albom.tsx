@@ -30,6 +30,7 @@ import {
 import moment from 'moment';
 import 'moment/locale/ru'  // without this line it didn't work
 import './Albom.scss';
+import InfoTab from '../../components/InfoTab/InfoTab';
 
 moment.locale('ru')
 
@@ -278,48 +279,7 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
                       horizontal: 'center',
                     }}
                   >
-                    <Tabs
-                      value={tab}
-                      indicatorColor="primary"
-                      textColor="primary"
-                      onChange={(e, newValue) => setTab(newValue)}
-                      aria-label="disabled tabs example"
-                    >
-                      <Tab label="Открытые" />
-                      <Tab label="Закрытые" />
-                    </Tabs>
-                    <TableContainer>
-                      <Table aria-label="simple table">
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>Время</TableCell>
-                            <TableCell>Оформитель</TableCell>
-                            <TableCell>Покупатель</TableCell>
-                            <TableCell>Продавец</TableCell>
-                            <TableCell>Товар</TableCell>
-                            <TableCell>Цена</TableCell>
-                            <TableCell>Количество</TableCell>
-                            <TableCell>Стоимость</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                        {country.trades.map(row => {
-                            return <TableRow key={row.name}>
-                              <TableCell component="th" scope="row">
-                                {moment(row.time).utc().format('HH:mm:ss')}
-                              </TableCell>
-                              <TableCell>{row.owner.name}</TableCell>
-                              <TableCell>{row?.buyer?.name}</TableCell>
-                              <TableCell>{row?.seller?.name}</TableCell>
-                              <TableCell>{row.resource.name}</TableCell>
-                              <TableCell>{row.cost}</TableCell>
-                              <TableCell>{row.count}</TableCell>
-                              <TableCell>{row.sum}</TableCell>
-                            </TableRow>
-                            })}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
+                    <InfoTab trades={country.trades} />
                   </Popover>
                   </CardActions>
                 </Card>
