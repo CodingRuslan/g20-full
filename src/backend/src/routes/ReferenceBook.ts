@@ -61,15 +61,14 @@ router.post('/add-resources-timer', async (req: Request, res: Response) => {
     return res.status(OK).send(deadline.toString());
 });
 
+router.get('/add-resources-timer', async (req: Request, res: Response) => {
+    const deadline = await resourceController.getDeadlineTimeForScheduler();
+    return res.status(OK).send(deadline.toString());
+});
+
 router.delete('/add-resources-timer', async (req: Request, res: Response) => {
     await resourceController.stopAddingResourcesForTimer();
     return res.status(OK).send();
-});
-
-router.get('/add-resources-timer', async (req: Request, res: Response) => {
-    const deadline = await resourceController.getDeadlineTimeForScheduler();
-    console.log(deadline)
-    return res.status(OK).send(deadline.toString());
 });
 
 router.post('/add-money', async (req: Request, res: Response) => {
