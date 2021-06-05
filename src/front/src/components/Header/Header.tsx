@@ -13,7 +13,6 @@ const Header = ({getHeaderLinks, links}) => {
             await getHeaderLinks();
         })()
     }, []);
-    console.log(links);
     return <div className="header">
         <Grid container spacing={1} className="header-container">
             <Grid item md={4} xs={12}>
