@@ -52,6 +52,18 @@ export default class DashboardService {
     return axios.post(`${_apiBase}/reference-book/add-money`, body);
   }
 
+  async setTimerResourceUpdating(body) {
+    return axios.post(`${_apiBase}/reference-book/add-resources-timer`, body);
+  }
+
+  async getTimerResourceUpdating() {
+    return axios.get(`${_apiBase}/reference-book/add-resources-timer`);
+  }
+
+  async deleteTimerResourceUpdating() {
+    return axios.delete(`${_apiBase}/reference-book/add-resources-timer`);
+  }
+
   async deleteTrade(body) {
     return axios.post(`${_apiBase}/reference-book/trade`, body);
   }
