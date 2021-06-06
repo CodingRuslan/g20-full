@@ -27,7 +27,7 @@ export default class Build {
     @ManyToMany((type) => ResourceCountRelations, { cascade: true, onDelete: 'CASCADE' })
     @JoinColumn({ name: 'change_id' })
     @JoinTable()
-    changes: Array<ResourceCountRelations>;
+    changes: ResourceCountRelations[];
 
     @ManyToMany((type) => ResourceCountRelations, { cascade: true, onDelete: 'CASCADE' })
     @JoinColumn({ name: 'build_conditions_id' })
