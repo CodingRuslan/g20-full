@@ -191,6 +191,7 @@ const getAllCountries = () => async dispatch => {
     dispatch({ type: 'SET_LOADING', payload: true});
     try {
       const {data} = await referenceBookService.getInfoAboutContries();
+      console.log(data)
 
       dispatch({ type: 'GET_COUNTRIES', payload: data});
       return data;

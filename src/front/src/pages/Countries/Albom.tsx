@@ -13,19 +13,14 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import {
   Popover,
-  Table,
-  TableContainer,
-  TableRow,
-  TableBody,
-  TableCell,
-  TableHead,
+
   Modal,
   TextField,
   Select,
   FormControl,
   MenuItem,
   InputLabel,
-  Avatar, Tabs, Tab, Paper
+  Avatar,
 } from '@material-ui/core';
 import moment from 'moment';
 import 'moment/locale/ru'  // without this line it didn't work
@@ -162,6 +157,12 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
                           </span>
                         </Typography>
                       })}
+                      <Typography>
+                        Деньги - {country.money}&nbsp;
+                        <span className={country.moneyIncrease > 0 ? 'increases-green' : 'increases-red'}>
+                            ({country.moneyIncrease})
+                          </span>
+                      </Typography>
                     </div>
                     <details>
                       <summary>Развитые сферы</summary>
