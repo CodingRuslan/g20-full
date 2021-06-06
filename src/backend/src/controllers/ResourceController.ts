@@ -80,10 +80,20 @@ export default class ResourceController {
     const resourcesOwnerRepository = getRepository(ResourceOwner);
     const buildOwnerRepository = getRepository(BuildOwner);
     const increaseRepository = getRepository(IncreaseResources);
+    const countryRepository = getRepository(Country)
     const allBuildOwners = await buildOwnerRepository.find({relations: ['country', 'build', 'build.changes', 'build.changes.resource'],
      where: {
        build: Not(IsNull())
      }});
+    const allCountriesWithMoneyIncrease = await countryRepository.find({
+      where: {moneyIncrease: Not(0)}
+    })
+
+    for(const country of allCountriesWithMoneyIncrease) {
+      await countryRepository.update(country, {
+        money: +country.money + +country.moneyIncrease
+      })
+    }
 
     for(const buildOwner of allBuildOwners) {
       for(const change of buildOwner.build.changes) {
@@ -178,6 +188,7 @@ export default class ResourceController {
     const countriesRepository = getRepository(Country);
     const resourcesOwnerRepository = getRepository(ResourceOwner);
     const optionsRepository = getRepository(Options);
+    const resourceCountRelationsRepository = getRepository(ResourceCountRelations)
 
     const isGameGoing = await optionsRepository.findOne({name: 'isGameGoing'});
     if(!isGameGoing?.value) {
@@ -185,7 +196,21 @@ export default class ResourceController {
     }
 
     let country = await countriesRepository.findOne(data.country);
-    const build = await buildRepository.findOne({relations: ['buildConditions', 'buildConditions.resource'], where: {id: data.build}});
+    const build = await buildRepository.findOne({
+      relations: ['buildConditions', 'buildConditions.resource', 'changes', 'changes.resource'],
+      where: {id: data.build}});
+
+    let moneyIncrease = 0
+    if (!!build?.changes) {
+      for (const changes of build?.changes) {
+        const resourceCountRelation = await resourceCountRelationsRepository.findOne({
+          relations: ['resource'],
+          where: {id: changes.id}
+        })
+        moneyIncrease = resourceCountRelation?.resource.name == "Деньги" ? resourceCountRelation.count : moneyIncrease
+
+      }
+    }
 
 
     if(country && build) {
@@ -209,7 +234,11 @@ export default class ResourceController {
             }
           }
 
-          country = await countriesRepository.save({...country, money: country.money - build?.moneyCost});
+          country = await countriesRepository.save({
+            ...country,
+            money: country.money - build?.moneyCost,
+            moneyIncrease: Number(country.moneyIncrease) + Number(moneyIncrease)
+          });
           country = await countriesRepository.findOne(data.country, {
             relations: ['lifeLevel']
           });
@@ -617,7 +646,7 @@ export default class ResourceController {
 
     let row = 2;
     const linksArray = [];
-    while (row !== 6) {
+    while (table[`A${row}`]) {
         const link = {
             name: table[`B${row}`].v,
             link: table[`C${row}`].v
@@ -681,7 +710,8 @@ export default class ResourceController {
             name: table[`B${row}`].v,
             uniqTradeKey: table[`C${row}`].v,
             img: table[`D${row}`].v,
-            money: table[`E${row}`].v
+            money: table[`E${row}`].v,
+            moneyIncrease: table[`F${row}`].v,
         };
 
         countries.push(country);

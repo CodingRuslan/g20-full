@@ -19,6 +19,9 @@ export default class Country {
     @Column({type: 'int', default: 0, nullable: false})
     money: number;
 
+    @Column({type: 'int', default: 0, nullable: false})
+    moneyIncrease: number;
+
     @Column({ type: 'timestamp', nullable: true })
     lifeLevelUpdate: Date;
 
