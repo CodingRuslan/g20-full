@@ -5,9 +5,12 @@ export default class CountriesController {
 
    async getAllCountries() {
       const countriesRepository = getRepository(Country);
-      const countries = await countriesRepository.find({relations: [
+      const countries = await countriesRepository.find({
+         relations: [
             'lifeLevel'
-         ]});
+         ],
+         order: { name: "ASC" }
+      });
       return countries;
    }
 

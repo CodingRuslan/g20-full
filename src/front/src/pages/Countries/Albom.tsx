@@ -158,7 +158,7 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
                         </Typography>
                       })}
                       <Typography>
-                        Деньги - {country.money}&nbsp;
+                        Денежная масса - {country.money}&nbsp;
                         <span className={country.moneyIncrease > 0 ? 'increases-green' : 'increases-red'}>
                             ({country.moneyIncrease})
                           </span>

@@ -273,7 +273,8 @@ export default class ResourceController {
     const tradeRepository = getRepository(Trade);
     return await tradeRepository.find({ relations: ['seller', 'buyer', 'owner', 'resource'],
     where: [
-      {owner: country}
+      {owner: country},
+      { buyer: country, status: TradeStatus.Closed }
    ] });
   }
 
@@ -591,9 +592,14 @@ export default class ResourceController {
     countries.cell(1, 3).string('Уникальный торговый ключ (УТК)');
     countries.cell(1, 4).string('Изображение страны');
     countries.cell(1, 5).string('Деньги');
+    countries.cell(1, 6).string('Уровень жизни');
+    countries.cell(1, 7).string('Время выхода на уровень жизни');
+
 
     const countriesRepository = getRepository(Country);
-    const allCountries = await countriesRepository.find();
+    const allCountries = await countriesRepository.find({
+      relations: ['lifeLevel']
+    });
 
     allCountries.map((country, index) => {
       countries.cell(index + 2, 1).number(index+1);
@@ -601,6 +607,8 @@ export default class ResourceController {
       countries.cell(index + 2, 3).string(country.uniqTradeKey);
       countries.cell(index + 2, 4).string(country.img);
       countries.cell(index + 2, 5).number(country.money);
+      countries.cell(index + 2, 6).string(!!country?.lifeLevel?.name ? country?.lifeLevel?.name : '');
+      countries.cell(index + 2, 7).string(!!country.lifeLevelUpdate ? country.lifeLevelUpdate.toLocaleString() : '');
     });
 
 
