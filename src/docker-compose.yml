@@ -1,0 +1,23 @@
+version: "3"
+services:
+  api:
+    build: ./backend
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+    container_name: blog-api
+  client:
+    build: ./front
+    ports:
+      - "80:80"
+    container_name: blog-client
+  db:
+    image: postgres:13.1
+    environment:
+      POSTGRES_DB: "g20_db"
+      POSTGRES_USER: "myuser"
+      POSTGRES_PASSWORD: "password"
+    ports:
+      - "9432:5432"
+    container_name: blog-db
