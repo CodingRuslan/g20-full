@@ -10,7 +10,7 @@ services:
   client:
     build: ./front
     ports:
-      - "80:80"
+      - "8080:80"
     container_name: blog-client
   db:
     image: postgres:13.1
