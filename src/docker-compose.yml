@@ -1,6 +1,7 @@
 version: "3"
 services:
   api:
+    image: nginx:1.16-alpine
     build: ./backend
     ports:
       - "4040:4000"
