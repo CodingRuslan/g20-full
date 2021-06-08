@@ -52,6 +52,7 @@ createConnection().then(async connection => {
     if (process.env.NODE_ENV === 'production') {
         app.use(helmet());
     }
+    app.use(helmet());
 
     // Add APIs
     app.use('', BaseRouter);

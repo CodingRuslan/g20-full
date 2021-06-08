@@ -11,5 +11,6 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY casegames.ru.crt /etc/ssl/casegames.ru.crt
 COPY casegames.ru.key /etc/ssl/casegames.ru.key
 
-EXPOSE 80
+EXPOSE "80"
+EXPOSE "443"
 CMD ["nginx", "-g", "daemon off;"]
