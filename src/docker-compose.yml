@@ -34,7 +34,7 @@ services:
       - ./.ssl-data:/etc/resty-auto-ssl
     environment:
       ALLOWED_DOMAINS: '12-2.casegames.ru'
-      SITES: '12-2.casegames.ru=client:80;12-2.casegames.ru/api=api:4000'
+      SITES: '12-2.casegames.ru=client:80;'
       FORCE_HTTPS: "true"
     depends_on:
       - client
