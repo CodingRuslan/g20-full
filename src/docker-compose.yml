@@ -3,7 +3,7 @@ services:
   api:
     build: ./backend
     ports:
-      - "4040:4000"
+      - "4000:4000"
     depends_on:
       - db
     container_name: blog-api
