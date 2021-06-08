@@ -18,7 +18,6 @@ createConnection().then(async connection => {
     const logger = log4js.getLogger();
 
     const app = express();
-    app.use(cors())
     const { BAD_REQUEST } = StatusCodes;
 
     const optionsRepository = getRepository(Options);
@@ -42,6 +41,7 @@ createConnection().then(async connection => {
     app.use(express.json());
     app.use(express.urlencoded({extended: true}));
     app.use(cookieParser());
+    app.options('*', cors())
 
     // Show routes called in console during development
     if (process.env.NODE_ENV === 'development') {
@@ -52,7 +52,6 @@ createConnection().then(async connection => {
     if (process.env.NODE_ENV === 'production') {
         app.use(helmet());
     }
-    app.use(helmet());
 
     // Add APIs
     app.use('', BaseRouter);
