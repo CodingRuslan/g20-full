@@ -2,6 +2,7 @@ version: "3"
 services:
   api:
     build: ./backend
+    network_mode: "bridge"
     ports:
       - "4040:4000"
     depends_on:
@@ -9,12 +10,14 @@ services:
     container_name: blog-api
   client:
     image: nginx:1.16-alpine
+    network_mode: "bridge"
     build: ./front
     ports:
       - "8080:80"
     container_name: blog-client
   db:
     image: postgres:13.1
+    network_mode: "bridge"
     environment:
       POSTGRES_DB: "g20_db"
       POSTGRES_USER: "myuser"
@@ -25,6 +28,7 @@ services:
 
   reverse-proxy:
     image: valian/docker-nginx-auto-ssl:1.0.0
+    network_mode: "bridge"
     container_name: reverse-proxy
     restart: on-failure
     ports:
