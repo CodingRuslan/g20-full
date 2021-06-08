@@ -8,10 +8,10 @@ services:
       - db
     container_name: blog-api
   client:
-    image: nginx:1.16-alpine
     build: ./front
     ports:
-      - "8080:80"
+      - "80:80"
+      - "443:443"
     container_name: blog-client
   db:
     image: postgres:13.1
@@ -22,23 +22,3 @@ services:
     ports:
       - "9432:5432"
     container_name: blog-db
-
-  reverse-proxy:
-    image: valian/docker-nginx-auto-ssl:1.0.0
-    container_name: reverse-proxy
-    restart: on-failure
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - ./.ssl-data:/etc/resty-auto-ssl
-    environment:
-      ALLOWED_DOMAINS: '12-2.casegames.ru'
-      SITES: '12-2.casegames.ru=client:80;12-2.casegames.ru/api=api:4000'
-      FORCE_HTTPS: "true"
-    depends_on:
-      - client
-      - api
-
-volumes:
-  .ssl-data:
