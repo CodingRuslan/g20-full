@@ -72,7 +72,7 @@ const AdminPanel = ({
 
     useEffect(() => {
         const pass = prompt('Пожалуйста введите пароль');
-        if(pass === '') { //
+        if(pass === 'cgschoolg20_1') {
             setIsValidPass(true);
         }
     }, []);
