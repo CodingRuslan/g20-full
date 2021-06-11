@@ -273,8 +273,9 @@ export default class ResourceController {
     const tradeRepository = getRepository(Trade);
     return await tradeRepository.find({ relations: ['seller', 'buyer', 'owner', 'resource'],
     where: [
-      {owner: country},
-      { buyer: country, status: TradeStatus.Closed }
+      // { owner: country },
+      { buyer: country, status: TradeStatus.Closed },
+      { seller: country, status: TradeStatus.Closed }
    ] });
   }
 

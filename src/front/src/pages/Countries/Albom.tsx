@@ -179,7 +179,7 @@ const Album = ({getInfoAboutCountries, countries, getAllBuilds, createBuild,
                       {
                         !!country?.lifeLevel ?
                           <div>{country?.lifeLevel?.name},{' '}
-                            {moment(country?.lifeLevelUpdate).utc().format('LLL')}</div> :
+                            {moment(country?.lifeLevelUpdate).add(3, 'hours').format('LLL')}</div> :
                           <div>Страна еще не получила никакого уровня жизни</div>
                       }
                     </details>
