@@ -41,28 +41,14 @@ const InfoTab = ({ trades }) => {
 
     const [tab, setTab] = useState(0);
 
-    // useEffect(() => {
-    //     (async function asyncFunc() {
-    //         if(tab === 0) {
-    //             await getAllTrades();
-    //         }
-    //         if(tab === 1) {
-    //             await getAllClosedTrades();
-    //         }
-    //         if(tab === 2) {
-    //             await getAllAds();
-    //         }
-    //     })();
-    // }, [tab])
-
     const filteredTrades = () => {
-        console.log(trades)
         return trades.filter((trade) => {
-            if (tab === 2 && !trade.seller && !trade.buyer) {
+            if (tab === 2 && (!trade.seller || !trade.buyer)) {
                 return trade
             } else if (tab === 1 && trade.status === 'closed') {
                 return trade
-            } else if (tab === 0 && trade.status === 'active') {
+            } else if (tab === 0 && trade.status === 'active'
+              && !!trade.seller && !!trade.buyer) {
                 return trade
             }
         })
